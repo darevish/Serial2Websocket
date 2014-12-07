@@ -11,7 +11,7 @@ A tunnel with a serial port on one end and a websocket server on the other, so c
 **dependencies**
   * Boost
   * wxWidgets
-  * [Websocket++](http://www.zaphoyd.com/websocketpp)
+  * [WebSocket++](http://www.zaphoyd.com/websocketpp)
 
 **compile with:**
 
