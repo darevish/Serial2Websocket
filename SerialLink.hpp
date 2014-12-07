@@ -46,7 +46,6 @@ private:
 
     void destroy();
 
-
 public:
     SerialLink(
         boost::asio::io_service& _io_service,

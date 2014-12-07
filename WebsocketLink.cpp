@@ -5,7 +5,7 @@ using websocketpp::lib::placeholders::_1;
 using websocketpp::lib::placeholders::_2;
 using websocketpp::lib::bind;
 
-WebsocketLink::WebsocketLink(boost::asio::io_service& _io_service) : io_service(_io_service)
+WebsocketLink::WebsocketLink(boost::asio::io_service& _io_service, short websocketPort) : io_service(_io_service)
 {
     hdl_inited = false;
 
@@ -23,7 +23,9 @@ WebsocketLink::WebsocketLink(boost::asio::io_service& _io_service) : io_service(
     echo_server.set_message_handler(websocketpp::lib::bind(&WebsocketLink::onMessage, this, &echo_server,::_1,::_2));
 
     // Listen on port 9002
-    echo_server.listen(9002);
+    echo_server.listen(websocketPort);
+
+    std::cout<<"lofasz"<<std::endl;
 
     // Start the server accept loop
     echo_server.start_accept();
