@@ -17,7 +17,7 @@ class SerialLink;
 class WebsocketLink {
 public:
 
-    WebsocketLink(boost::asio::io_service& _io_service);
+    WebsocketLink(boost::asio::io_service& _io_service, short websocketPort);
 
     void doSend(std::string& message);
 

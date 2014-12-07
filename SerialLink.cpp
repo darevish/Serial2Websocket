@@ -145,5 +145,8 @@ void SerialLink::addToQueue(std::string& msg) {
 
 void SerialLink::destroy() {
     serial_port.cancel();
-    serial_port.close();
+
+    if (serial_port.is_open()) {
+        serial_port.close();
+    }
 }
