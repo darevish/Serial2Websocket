@@ -19,6 +19,8 @@ public:
 
     WebsocketLink(boost::asio::io_service& _io_service, short websocketPort);
 
+    ~WebsocketLink();
+
     void doSend(std::string& message);
 
     void setSerialLink(SerialLink *_serialLink);
@@ -26,7 +28,7 @@ public:
     SerialLink *serialLink;
 
 private:
-    server echo_server;
+    server ws_server;
     boost::asio::io_service& io_service;
     websocketpp::connection_hdl hdl;
     bool hdl_inited;

@@ -169,12 +169,17 @@ S2WFrame::S2WFrame(wxWindow* parent,wxWindowID id)
 
 S2WFrame::~S2WFrame()
 {
+    if (tunnelIsActive) {
+        stopTunnel();
+    }
     //(*Destroy(S2WFrame)
     //*)
 }
 
 void S2WFrame::myInit()
 {
+    tunnelIsActive = false;
+
     WSPortNumberSpinCtrl->SetValue(9002);
     BaudRateSpinCtrl->SetValue(9600);
 
@@ -216,6 +221,7 @@ void S2WFrame::setIsRunningStateOnGUI(bool _isRunning)
     StartButton->Enable( !_isRunning );
     SerialPortNameComboBox->Enable( !_isRunning );
     WSPortNumberSpinCtrl->Enable( !_isRunning );
+    EmptyMsgTextCtrl->Enable( !_isRunning );
     BaudRateSpinCtrl->Enable( !_isRunning );
 
     if (_isRunning) {
@@ -232,15 +238,15 @@ void S2WFrame::setIsRunningStateOnGUI(bool _isRunning)
 void S2WFrame::OnStartButtonClick(wxCommandEvent& event)
 {
     std::string device(SerialPortNameComboBox->GetValue());
+    std::string emptyMessage(EmptyMsgTextCtrl->GetValue());
+    unsigned int baudRate = (unsigned int)BaudRateSpinCtrl->GetValue();
 
     short websocketPort = (short)WSPortNumberSpinCtrl->GetValue();
-
-    unsigned int baudRate = (unsigned int)BaudRateSpinCtrl->GetValue();
 
     std::cout<<"aaaa"<<std::endl;
 
     try {
-        serialLink_p = new SerialLink(io_service, device, baudRate);
+        serialLink_p = new SerialLink(io_service, device, emptyMessage, baudRate);
         websocketLink_p = new WebsocketLink(io_service, websocketPort);
 
         serialLink_p->setWebsocketLink(websocketLink_p);
@@ -249,19 +255,19 @@ void S2WFrame::OnStartButtonClick(wxCommandEvent& event)
         // io_service.run();
         backgroundThread_p = new boost::thread( boost::bind(&boost::asio::io_service::run, &io_service) );
     
+        tunnelIsActive = true;
+        
         std::cout<<"aaaa"<<std::endl;
     } catch (std::exception& e) {
         std::cout<<e.what()<<std::endl;
     }
 
     setIsRunningStateOnGUI(true);
+
 }
 
-void S2WFrame::OnStopButtonClick(wxCommandEvent& event)
+void S2WFrame::stopTunnel()
 {
-    std::cout<<"aaaa"<<std::endl;
-    // return;
-
     try {
         // serialLink_p->destroy();
 
@@ -273,11 +279,19 @@ void S2WFrame::OnStopButtonClick(wxCommandEvent& event)
         delete websocketLink_p;
         delete backgroundThread_p;
 
+        tunnelIsActive = false;
+
         std::cout<<"aaaa"<<std::endl;
     } catch (std::exception& e) {
         std::cout<<e.what()<<std::endl;
     }
 
+}
+
+void S2WFrame::OnStopButtonClick(wxCommandEvent& event)
+{
+    std::cout<<"aaaa"<<std::endl;
+    stopTunnel();
     setIsRunningStateOnGUI(false);
 
 }

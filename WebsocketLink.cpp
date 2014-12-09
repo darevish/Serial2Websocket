@@ -7,28 +7,39 @@ using websocketpp::lib::bind;
 
 WebsocketLink::WebsocketLink(boost::asio::io_service& _io_service, short websocketPort) : io_service(_io_service)
 {
+    std::cout<<"WebsocketLink constructor begin"<<std::endl;
+
     hdl_inited = false;
 
-    echo_server.set_access_channels(websocketpp::log::alevel::none);
-    echo_server.set_error_channels(websocketpp::log::elevel::none);
+    ws_server.set_access_channels(websocketpp::log::alevel::none);
+    ws_server.set_error_channels(websocketpp::log::elevel::none);
 
     // Initialize ASIO
-    echo_server.init_asio(&io_service);
-    echo_server.set_reuse_addr(true);
+    ws_server.init_asio(&io_service);
+    ws_server.set_reuse_addr(true);
 
     // Register our open handler
-    echo_server.set_open_handler(websocketpp::lib::bind(&WebsocketLink::onOpen, this, &echo_server,::_1));
+    ws_server.set_open_handler(websocketpp::lib::bind(&WebsocketLink::onOpen, this, &ws_server,::_1));
 
     // Register our message handler
-    echo_server.set_message_handler(websocketpp::lib::bind(&WebsocketLink::onMessage, this, &echo_server,::_1,::_2));
+    ws_server.set_message_handler(websocketpp::lib::bind(&WebsocketLink::onMessage, this, &ws_server,::_1,::_2));
 
     // Listen on port 9002
-    echo_server.listen(websocketPort);
-
-    std::cout<<"lofasz"<<std::endl;
+    ws_server.listen(websocketPort);
 
     // Start the server accept loop
-    echo_server.start_accept();
+    ws_server.start_accept();
+
+    std::cout<<"WebsocketLink constructor end"<<std::endl;
+}
+
+WebsocketLink::~WebsocketLink() {
+    std::cout<<"WebsocketLink desctructor begin"<<std::endl;
+    if (hdl_inited) {
+        std::cout<<"closing connection"<<std::endl;
+        ws_server.close(hdl, websocketpp::close::status::normal, "Stopped");
+    }
+    std::cout<<"WebsocketLink desctructor end"<<std::endl;
 }
 
 void WebsocketLink::setSerialLink(SerialLink *_serialLink) {
@@ -37,14 +48,14 @@ void WebsocketLink::setSerialLink(SerialLink *_serialLink) {
 
 void WebsocketLink::doSend(std::string& message) {
     if (hdl_inited) {
-        echo_server.send(hdl, message, websocketpp::frame::opcode::text);
+        ws_server.send(hdl, message, websocketpp::frame::opcode::text);
     }
 }
 
 void WebsocketLink::onOpen(server* s, websocketpp::connection_hdl _hdl) {
     hdl = _hdl;
     hdl_inited = true;
-    std::cout<<std::endl<< "hello new visitor" << std::endl;
+    std::cout<< "hello new visitor" << std::endl;
     io_service.post(boost::bind(&SerialLink::readNewLine, serialLink));
 }
 

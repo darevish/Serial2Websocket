@@ -4,11 +4,14 @@
 SerialLink::SerialLink(
     boost::asio::io_service& _io_service,
     std::string& _device,
+    std::string& _emptyMessage,
     unsigned int _baud_rate,
     unsigned int _character_size
 ) : io_service(_io_service),
     strand(_io_service),
-    serial_port(_io_service, _device), device(_device),
+    serial_port(_io_service, _device),
+    device(_device),
+    emptyMessage(_emptyMessage),
     baud_rate(_baud_rate),
     character_size(_character_size),
     flow_control(boost::asio::serial_port_base::flow_control::none),
@@ -16,8 +19,9 @@ SerialLink::SerialLink(
     stop_bits(boost::asio::serial_port_base::stop_bits::one),
     timer(_io_service)
 {
+    std::cout<<"SerialLink constructor begin"<<std::endl;
     initOptions();
-    // io_service.post(boost::bind(&SerialLink::readNewLine, this));
+    std::cout<<"SerialLink constructor end"<<std::endl;
 }
 
 SerialLink::~SerialLink() {
@@ -85,7 +89,7 @@ void SerialLink::processLine(const boost::system::error_code& err, std::size_t b
             exit(1);
         }
 
-        if (line.find("yourturn") != std::string::npos) {
+        if (line.find(emptyMessage) != std::string::npos) {
             io_service.post(boost::bind(&SerialLink::doWrite, this));
         } else {
             io_service.post(strand.wrap( boost::bind(&WebsocketLink::doSend, websocketLink, line) ));

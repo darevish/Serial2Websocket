@@ -49,6 +49,7 @@ class S2WFrame: public wxFrame
         //*)
 
         void setIsRunningStateOnGUI(bool _isRunning);
+        void stopTunnel();
 
         //(*Identifiers(S2WFrame)
         static const long ID_STATICTEXT1;
@@ -94,6 +95,8 @@ class S2WFrame: public wxFrame
 
         SerialLink *serialLink_p;
         WebsocketLink *websocketLink_p;
+
+        bool tunnelIsActive;
 };
 
 #endif // S2WMAIN_H
