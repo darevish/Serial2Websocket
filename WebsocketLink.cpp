@@ -66,7 +66,7 @@ void WebsocketLink::onMessage(server* s, websocketpp::connection_hdl _hdl, messa
 
     try {
         std::string message(msg->get_payload());
-        io_service.post(boost::bind( &SerialLink::addToQueue, serialLink, message ));
+        io_service.post(boost::bind( &SerialLink::doWrite, serialLink, message ));
     } catch (const websocketpp::lib::error_code& e) {
         std::cout << "Echo failed because: " << e
                   << "(" << e.message() << ")" << std::endl;

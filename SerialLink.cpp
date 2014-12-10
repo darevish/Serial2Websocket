@@ -4,14 +4,12 @@
 SerialLink::SerialLink(
     boost::asio::io_service& _io_service,
     std::string& _device,
-    std::string& _emptyMessage,
     unsigned int _baud_rate,
     unsigned int _character_size
 ) : io_service(_io_service),
     strand(_io_service),
     serial_port(_io_service, _device),
     device(_device),
-    emptyMessage(_emptyMessage),
     baud_rate(_baud_rate),
     character_size(_character_size),
     flow_control(boost::asio::serial_port_base::flow_control::none),
@@ -83,18 +81,8 @@ void SerialLink::processLine(const boost::system::error_code& err, std::size_t b
 
         std::cout<<"Line: "<<line<<std::endl;
 
-        if (line.find("exitnow") != std::string::npos) {
-            std::cout<<"Bye!"<<std::endl;
-            destroy();
-            exit(1);
-        }
-
-        if (line.find(emptyMessage) != std::string::npos) {
-            io_service.post(boost::bind(&SerialLink::doWrite, this));
-        } else {
-            io_service.post(strand.wrap( boost::bind(&WebsocketLink::doSend, websocketLink, line) ));
-            io_service.post(strand.wrap( boost::bind(&SerialLink::readNewLine, this) ));
-        }
+        io_service.post(strand.wrap( boost::bind(&WebsocketLink::doSend, websocketLink, line) ));
+        io_service.post(strand.wrap( boost::bind(&SerialLink::readNewLine, this) ));
     } else {
         timer.expires_from_now(boost::posix_time::seconds(5));
         timer.async_wait(boost::bind(&SerialLink::restart, this, boost::asio::placeholders::error));
@@ -114,26 +102,11 @@ void SerialLink::readNewLine() {
 }
 
 void SerialLink::writeHandler(const boost::system::error_code& error, std::size_t bytes_transferred) {
-    if (needWrite) {
-        io_service.post(boost::bind(&SerialLink::doWrite, this));
-    } else {
-        io_service.post(boost::bind(&SerialLink::readNewLine, this));
-    }
+    std::cout<<"written "<<bytes_transferred<<" bytes to serial port"<<std::endl;
 }
 
-void SerialLink::doWrite() {
-    std::string str;
-
-    if ( writeQueue.empty() ) {
-        str = emptyMessage + "\n";
-        needWrite = false;
-    } else {
-        str = writeQueue.front();
-        writeQueue.pop(); 
-        needWrite = true;   
-    }
-
-    boost::asio::async_write(serial_port, boost::asio::buffer(str), 
+void SerialLink::doWrite(std::string& msg) {
+    boost::asio::async_write(serial_port, boost::asio::buffer(msg), 
         boost::bind(
             &SerialLink::writeHandler,
             this,
@@ -141,10 +114,6 @@ void SerialLink::doWrite() {
             boost::asio::placeholders::bytes_transferred
         )
     );
-}
-
-void SerialLink::addToQueue(std::string& msg) {
-    writeQueue.push(msg);
 }
 
 void SerialLink::destroy() {
