@@ -32,8 +32,6 @@ private:
 
     WebsocketLink *websocketLink;
 
-    std::string emptyMessage;
-
     std::queue<std::string> writeQueue;
 
     bool needWrite;
@@ -44,15 +42,12 @@ private:
 
     void writeHandler(const boost::system::error_code& error, std::size_t bytes_transferred);
 
-    void doWrite();
-
     void destroy();
 
 public:
     SerialLink(
         boost::asio::io_service& _io_service,
         std::string& _device,
-        std::string& _emptyMessage,
         unsigned int _baud_rate = 9600,
         unsigned int _character_size = 8
     );
@@ -67,7 +62,7 @@ public:
 
     void setWebsocketLink(WebsocketLink *_websocketLink);
 
-    void addToQueue(std::string& msg);
+    void doWrite(std::string& msg);
 };
 
 #endif

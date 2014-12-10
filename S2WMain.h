@@ -58,8 +58,8 @@ class S2WFrame: public wxFrame
         static const long ID_COMBOBOX1;
         static const long ID_STATICTEXT4;
         static const long ID_SPINCTRL2;
-        static const long ID_STATICTEXT3;
-        static const long ID_TEXTCTRL1;
+        // static const long ID_STATICTEXT3;
+        // static const long ID_TEXTCTRL1;
         static const long ID_STATICTEXT5;
         static const long ID_STATICTEXT6;
         static const long ID_BUTTON1;
@@ -73,13 +73,13 @@ class S2WFrame: public wxFrame
         //(*Declarations(S2WFrame)
         wxButton* StopButton;
         wxPanel* Panel1;
-        wxTextCtrl* EmptyMsgTextCtrl;
+        // wxTextCtrl* EmptyMsgTextCtrl;
         wxStatusBar* StatusBar1;
         wxComboBox* SerialPortNameComboBox;
         wxStaticText* IsRunningStaticText;
         wxStaticText* StaticText1;
         wxButton* StartButton;
-        wxStaticText* StaticText3;
+        // wxStaticText* StaticText3;
         wxSpinCtrl* BaudRateSpinCtrl;
         wxSpinCtrl* WSPortNumberSpinCtrl;
         wxStaticText* StaticText4;

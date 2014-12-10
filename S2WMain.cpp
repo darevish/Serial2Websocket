@@ -49,8 +49,8 @@ const long S2WFrame::ID_STATICTEXT2 = wxNewId();
 const long S2WFrame::ID_COMBOBOX1 = wxNewId();
 const long S2WFrame::ID_STATICTEXT4 = wxNewId();
 const long S2WFrame::ID_SPINCTRL2 = wxNewId();
-const long S2WFrame::ID_STATICTEXT3 = wxNewId();
-const long S2WFrame::ID_TEXTCTRL1 = wxNewId();
+// const long S2WFrame::ID_STATICTEXT3 = wxNewId();
+// const long S2WFrame::ID_TEXTCTRL1 = wxNewId();
 const long S2WFrame::ID_STATICTEXT5 = wxNewId();
 const long S2WFrame::ID_STATICTEXT6 = wxNewId();
 const long S2WFrame::ID_BUTTON1 = wxNewId();
@@ -114,10 +114,10 @@ S2WFrame::S2WFrame(wxWindow* parent,wxWindowID id)
     BaudRateSpinCtrl = new wxSpinCtrl(Panel1, ID_SPINCTRL2, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0, 1000000, 0, _T("ID_SPINCTRL2"));
     BaudRateSpinCtrl->SetValue(_T("0"));
     FlexGridSizer3->Add(BaudRateSpinCtrl, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText3 = new wxStaticText(Panel1, ID_STATICTEXT3, _("Empty msg"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
-    FlexGridSizer3->Add(StaticText3, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-    EmptyMsgTextCtrl = new wxTextCtrl(Panel1, ID_TEXTCTRL1, _("yourturn"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
-    FlexGridSizer3->Add(EmptyMsgTextCtrl, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    // StaticText3 = new wxStaticText(Panel1, ID_STATICTEXT3, _("Empty msg"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+    // FlexGridSizer3->Add(StaticText3, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    // EmptyMsgTextCtrl = new wxTextCtrl(Panel1, ID_TEXTCTRL1, _("yourturn"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+    // FlexGridSizer3->Add(EmptyMsgTextCtrl, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer2->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer1->Add(StaticBoxSizer2, 1, wxBOTTOM|wxLEFT|wxRIGHT|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     StaticBoxSizer3 = new wxStaticBoxSizer(wxHORIZONTAL, Panel1, _("Status"));
@@ -221,7 +221,7 @@ void S2WFrame::setIsRunningStateOnGUI(bool _isRunning)
     StartButton->Enable( !_isRunning );
     SerialPortNameComboBox->Enable( !_isRunning );
     WSPortNumberSpinCtrl->Enable( !_isRunning );
-    EmptyMsgTextCtrl->Enable( !_isRunning );
+    // EmptyMsgTextCtrl->Enable( !_isRunning );
     BaudRateSpinCtrl->Enable( !_isRunning );
 
     if (_isRunning) {
@@ -238,7 +238,7 @@ void S2WFrame::setIsRunningStateOnGUI(bool _isRunning)
 void S2WFrame::OnStartButtonClick(wxCommandEvent& event)
 {
     std::string device(SerialPortNameComboBox->GetValue());
-    std::string emptyMessage(EmptyMsgTextCtrl->GetValue());
+    // std::string emptyMessage(EmptyMsgTextCtrl->GetValue());
     unsigned int baudRate = (unsigned int)BaudRateSpinCtrl->GetValue();
 
     short websocketPort = (short)WSPortNumberSpinCtrl->GetValue();
@@ -246,7 +246,7 @@ void S2WFrame::OnStartButtonClick(wxCommandEvent& event)
     std::cout<<"aaaa"<<std::endl;
 
     try {
-        serialLink_p = new SerialLink(io_service, device, emptyMessage, baudRate);
+        serialLink_p = new SerialLink(io_service, device, baudRate);
         websocketLink_p = new WebsocketLink(io_service, websocketPort);
 
         serialLink_p->setWebsocketLink(websocketLink_p);
