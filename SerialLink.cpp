@@ -125,7 +125,7 @@ void SerialLink::doWrite() {
     std::string str;
 
     if ( writeQueue.empty() ) {
-        str = std::string("yourturn\n");
+        str = emptyMessage + "\n";
         needWrite = false;
     } else {
         str = writeQueue.front();
