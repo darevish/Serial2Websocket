@@ -20,6 +20,8 @@ WebsocketLink::WebsocketLink(boost::asio::io_service& _io_service, short websock
 
     // Register our open handler
     ws_server.set_open_handler(websocketpp::lib::bind(&WebsocketLink::onOpen, this, &ws_server,::_1));
+    ws_server.set_fail_handler(websocketpp::lib::bind(&WebsocketLink::onFail, this, &ws_server,::_1));
+    ws_server.set_close_handler(websocketpp::lib::bind(&WebsocketLink::onClose, this, &ws_server,::_1));
 
     // Register our message handler
     ws_server.set_message_handler(websocketpp::lib::bind(&WebsocketLink::onMessage, this, &ws_server,::_1,::_2));
@@ -37,7 +39,8 @@ WebsocketLink::~WebsocketLink() {
     std::cout<<"WebsocketLink desctructor begin"<<std::endl;
     if (hdl_inited) {
         std::cout<<"closing connection"<<std::endl;
-        ws_server.close(hdl, websocketpp::close::status::normal, "Stopped");
+        ws_server.stop_listening();
+        ws_server.close(hdl, websocketpp::close::status::normal, "");
     }
     std::cout<<"WebsocketLink desctructor end"<<std::endl;
 }
@@ -53,10 +56,23 @@ void WebsocketLink::doSend(std::string& message) {
 }
 
 void WebsocketLink::onOpen(server* s, websocketpp::connection_hdl _hdl) {
-    hdl = _hdl;
-    hdl_inited = true;
-    std::cout<< "hello new visitor" << std::endl;
-    io_service.post(boost::bind(&SerialLink::readNewLine, serialLink));
+
+    if (hdl_inited == true) {
+        s->close(_hdl, websocketpp::close::status::normal, "");
+    } else {        
+        hdl = _hdl;
+        hdl_inited = true;
+        std::cout<< "hello new visitor" << std::endl;
+        io_service.post(boost::bind(&SerialLink::readNewLine, serialLink));
+    }
+}
+
+void WebsocketLink::onFail(server* s, websocketpp::connection_hdl _hdl) {
+    std::cout<< "connection fail" << std::endl;
+}
+
+void WebsocketLink::onClose(server* s, websocketpp::connection_hdl _hdl) {
+    std::cout<< "connection close" << std::endl;
 }
 
 void WebsocketLink::onMessage(server* s, websocketpp::connection_hdl _hdl, message_ptr msg) {

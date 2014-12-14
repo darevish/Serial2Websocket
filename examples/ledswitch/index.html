@@ -3,6 +3,7 @@
     <head>
         <script type="text/javascript">
             var ws;
+            
             function WebSocketTest()
             {
                 if ("WebSocket" in window)
@@ -24,6 +25,7 @@
                     ws.onclose = function()
                     { 
                         // websocket is closed.
+                        ws.close();
                         alert("Connection is closed..."); 
                     };
                 }

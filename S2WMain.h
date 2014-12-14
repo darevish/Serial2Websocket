@@ -90,7 +90,7 @@ class S2WFrame: public wxFrame
         DECLARE_EVENT_TABLE()
 
 
-        boost::asio::io_service io_service;
+        boost::asio::io_service *io_service;
         boost::thread *backgroundThread_p;
 
         SerialLink *serialLink_p;

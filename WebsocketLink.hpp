@@ -30,10 +30,13 @@ public:
 private:
     server ws_server;
     boost::asio::io_service& io_service;
+
     websocketpp::connection_hdl hdl;
     bool hdl_inited;
 
     void onOpen(server* s, websocketpp::connection_hdl _hdl);
+    void onFail(server* s, websocketpp::connection_hdl _hdl);
+    void onClose(server* s, websocketpp::connection_hdl _hdl);
 
     // Define a callback to handle incoming messages
     void onMessage(server* s, websocketpp::connection_hdl _hdl, message_ptr msg);

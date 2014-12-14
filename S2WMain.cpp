@@ -245,15 +245,17 @@ void S2WFrame::OnStartButtonClick(wxCommandEvent& event)
 
     std::cout<<"aaaa"<<std::endl;
 
+    io_service = new boost::asio::io_service();
+
     try {
-        serialLink_p = new SerialLink(io_service, device, baudRate);
-        websocketLink_p = new WebsocketLink(io_service, websocketPort);
+        serialLink_p = new SerialLink(*io_service, device, baudRate);
+        websocketLink_p = new WebsocketLink(*io_service, websocketPort);
 
         serialLink_p->setWebsocketLink(websocketLink_p);
         websocketLink_p->setSerialLink(serialLink_p);
 
         // io_service.run();
-        backgroundThread_p = new boost::thread( boost::bind(&boost::asio::io_service::run, &io_service) );
+        backgroundThread_p = new boost::thread( boost::bind(&boost::asio::io_service::run, io_service) );
     
         tunnelIsActive = true;
         
@@ -271,13 +273,14 @@ void S2WFrame::stopTunnel()
     try {
         // serialLink_p->destroy();
 
-        io_service.stop();
+        io_service->stop();
 
         backgroundThread_p->join();
 
         delete serialLink_p;
         delete websocketLink_p;
         delete backgroundThread_p;
+        delete io_service;
 
         tunnelIsActive = false;
 
