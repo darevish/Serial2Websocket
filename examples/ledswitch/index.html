@@ -1,21 +1,26 @@
 <!DOCTYPE HTML>
 <html>
     <head>
+        <title>Ledswitch</title>
+    </head>
+    <body>
+        <div id="sse">
+            <a href="javascript:webSocketTest()">Run WebSocket</a>
+        </div>
+        <br />
+        <button id="ledon" onclick="ledOn();">On</button>
+        <button id="ledoff" onclick="ledOff();">Off</button>
+
         <script type="text/javascript">
             var ws;
             
-            function WebSocketTest()
+            function webSocketTest()
             {
                 if ("WebSocket" in window)
                 {
-                    // alert("WebSocket is supported by your Browser!");
-                    // Let us open a web socket
                     ws = new WebSocket("ws://localhost:9002/");
                     ws.onopen = function()
                     {
-                        // Web Socket is connected, send data using send()
-                        // ws.send("Fooooooooo");
-                        // alert("Message is sent...");
                     };
                     ws.onmessage = function (evt) 
                     { 
@@ -23,23 +28,33 @@
                         console.log(received_msg);
                     };
                     ws.onclose = function()
-                    { 
-                        // websocket is closed.
-                        ws.close();
+                    {
                         alert("Connection is closed..."); 
                     };
                 }
                 else
                 {
-                    // The browser doesn't support WebSocket
                     alert("WebSocket NOT supported by your Browser!");
                 }
             }
-          </script>
-    </head>
-    <body>
-        <div id="sse">
-            <a href="javascript:WebSocketTest()">Run WebSocket</a>
-        </div>
+
+            function sendMessage(msg) {
+                if (typeof ws !== undefined) {
+                    console.log("sending message: " + msg);
+                    ws.send(msg + "\n");
+                }
+            }
+
+            function ledOn() {
+                console.log("ledon");
+                sendMessage("ledon");
+            }
+
+            function ledOff() {
+                console.log("ledoff");
+                sendMessage("ledoff");
+            }
+        </script>
+
     </body>
 </html>
